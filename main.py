@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential,load_model
 from tensorflow.keras.layers import Dense, LSTM, Dropout
+from tensorflow.keras.optimizers import RMSprop
 from sklearn.preprocessing import MinMaxScaler
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -35,7 +36,7 @@ def get_data(cn="BTC"): # function for a bitcoin-price scraping
 if not get_data(cname_of):
     get_data(cname_of)
 
-# data preprocessingpe
+# data preprocessing
 dataset = pd.read_csv(f"{cname_of}-USD.csv")
 dataset = dataset.drop(['Date', 'Open', 'High', 'Low', 'Adj Close', 'Volume'], axis=1)
 
@@ -70,9 +71,9 @@ model = Sequential([
     Dense(1)
 ])
 
-model.compile(loss='mse', optimizer='adam') # model's compiling
-model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=150, batch_size=4, verbose=1) # training
-# model.save("model_cryptobot.v1.h5") # saving
+model.compile(loss='mse', optimizer=RMSprop(0.02)) # model's compiling
+model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=10, batch_size=64, verbose=1) # training
+
 # using neural network
 dlen = len(dataset)
 last_prices = np.reshape(dataset[-dlen:], (1, dlen, 1))
